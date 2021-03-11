@@ -190,8 +190,10 @@ def run_distance_filter(event_info, distance_from_land):
             polygon = wkt.loads(str(p))
 
             # Create point object from event epicenter
-            lng = event_info["event_location"]["coordinates"][1]
-            lat = event_info["event_location"]["coordinates"][0]
+            #lng = event_info["event_location"]["coordinates"][1]
+            #lat = event_info["event_location"]["coordinates"][0]
+            lng = event_info["lon"]
+            lat = event_info["lat"]
             point = Point(lng, lat)
 
             # If event overlaps with region, no need to calculate distance; event will be processed
