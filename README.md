@@ -52,7 +52,7 @@ You may run your customized PGE via two methods that are documented below:
 
 ## Release History
 
-`v1.0.0` - https://github.com/aria-jpl/coseismic_product/releases/tag/v1.0.0 
+`v1.0.0` - https://github.com/aria-jpl/coseismic_usgs_neic_evaluator/releases/tag/v1.0.0
 
 ## Contributing
 
