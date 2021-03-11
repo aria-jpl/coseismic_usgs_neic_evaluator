@@ -3,7 +3,6 @@ USGS NEIC evaluator
 
 This repository contains code that will create a Program Executable (PGE) that generates HySDS datasets from USGS earthquake events. The PGE queries for acquisitions that overlap with the PDL event polygon then finds the union of the returned acquisitions for each track. The resulting polygon is published as an AOITRACK HySDS dataset. The overlap between these AOITRACKS and the extended PDL event polygon is published as an event AOI.
 
-![image](https://user-images.githubusercontent.com/47004511/110731182-af5ca180-81d6-11eb-9355-459d7b7df77f.png)
 <img width="655" alt="eval" src="https://user-images.githubusercontent.com/47004511/110731200-be435400-81d6-11eb-9ad1-91ba55eeef44.png">
 
 ## Build Instructions
