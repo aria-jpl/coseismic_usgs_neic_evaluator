@@ -1,7 +1,9 @@
 # coseismic_usgs_neic_evaluator
 USGS NEIC evaluator
 
-This repository contains code that will create a Program Executable (PGE) that generates HySDS datasets from USGS earthquake events.
+This repository contains code that will create a Program Executable (PGE) that generates HySDS datasets from USGS earthquake events. The PGE queries for acquisitions that overlap with the PDL event polygon then finds the union of the returned acquisitions for each track. The resulting polygon is published as an AOITRACK HySDS dataset. The overlap between these AOITRACKS and the extended PDL event polygon is published as an event AOI.
+
+![Uploading image.png…]()
 
 ## Build Instructions
 
@@ -39,7 +41,7 @@ You may run your customized PGE via two methods that are documented below:
   }
 }
 ```
-- Action: `hysds-io-coseismic_product-s1gunw-slc_localizer:main`
+- Action: `hysds-io-usgs_neic_event_evaluator:main`
 - Queue: `factotum-job_worker-large`
 - Keyword Args:
 ```
@@ -55,7 +57,7 @@ You may run your customized PGE via two methods that are documented below:
 ## Contributing
 
 1. Create an GitHub issue ticket describing what changes you need (e.g. issue-1)
-2. Fork this repo (<https://github.com/aria-jpl/coseismic_product/fork>)
+2. Fork this repo (<https://github.com/aria-jpl/coseismic_usgs_neic_evaluator/fork>)
 3. Make your modifications in your own fork
 4. Make a pull-request in this repo with the code in your fork and tag the repo owner / largest contributor as a reviewer
 
