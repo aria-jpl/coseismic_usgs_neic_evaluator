@@ -17,6 +17,7 @@ from collections import defaultdict
 from shapely.geometry import shape
 from elasticsearch import Elasticsearch
 import urllib3
+import lightweight_water_mask
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -35,7 +36,7 @@ def main(event_polygon, extended_event_polygon):
        print("Failed to connect to host.")
        return 1
 
-    doc = {"query":{"filtered":{"query":{"bool":{"must":[{"term":{"dataset.raw":"acquisition-S1-IW_SLC"}}]}},"filter":{"geo_shape":{"location":{"shape":{"type":"polygon","coordinates":event_polygon}}}}}},"size":constants.SIZE,"sort":[{"_timestamp":{"order":"desc"}}],"fields":["_timestamp","_source"]}
+    doc = {"query":{"filtered":{"query":{"bool":{"must":[{"term":{"dataset.raw":"acquisition-S1-IW_SLC"}}]}},"filter":{"geo_shape":{"location":{"shape":{"type":"polygon","coordinates":extended_event_polygon}}}}}},"size":constants.SIZE,"sort":[{"_timestamp":{"order":"desc"}}],"fields":["_timestamp","_source"]}
     res = grq.search(index=constants.GRQ_ACQUISITION_INDEX, body=doc)
 
     print("Number of acquisitions over event: {}".format(res['hits']['total']))
@@ -47,7 +48,7 @@ def main(event_polygon, extended_event_polygon):
                 tracks[track_number]["polygons"].append(polygon)
                 tracks[track_number]["acq_id"].append(acq_id)
             else: # If this is a new track
-                tracks[track_number] = {"polygons": [],"orbit_direction": "", "acq_id": []}
+                tracks[track_number] = {"polygons": [],"orbit_direction": "", "acq_id": [], "land_area_km2": None}
                 tracks[track_number]["polygons"].append(polygon)
                 tracks[track_number]["orbit_direction"] = orbit_direction
                 tracks[track_number]["acq_id"].append(acq_id)
@@ -68,13 +69,21 @@ def main(event_polygon, extended_event_polygon):
         geojson = shapely.geometry.mapping(boundary)
         track_json = json.dumps(geojson)
 
+        # AOITRACK land area (km2)
+        tracks[track]['land_area_km2'] = lightweight_water_mask.get_land_area(track_json)
+        print("Track land area: " + tracks[track]['land_area_km2'])
+
+        track_poly_land = lightweight_water_mask.get_land_polygons(track_json)
+        print("Track land polygon: " + track_poly_land)
+
         # AOI bbox -- starts out with the complete displacement estimator and is carved down
         # to a smaller piece track-by-track
         tmp_intersect = tmp_intersect.intersection(boundary)
 
         # Save track data for create-aoi-track job submission
         tmp.append(track)
-        tmp.append(track_json)
+        #tmp.append(track_json)
+        tmp.append(track_poly_land)
         tmp.append(tracks[track]['orbit_direction'])
         track_data.append(tmp)
     print("This is what is sent out")
@@ -82,6 +91,8 @@ def main(event_polygon, extended_event_polygon):
     aoi = json.dumps(tmp_intersect_json)
     print(aoi)
     print(track_data)
+    print("All the tracks")
+    print(tracks.keys())
     return track_data, aoi
 
 # Converts geojson to a shapely polygon
@@ -101,7 +112,7 @@ def getAcqInfo(product):
     return track_number, polygon, orbit_direction, acq_id
 
 # if __name__ == '__main__':
-#     polygon = [[[121.97079663164914,24.800134496080535],[121.97079663164914,24.822078622176527],[121.9918251503259,24.822078622176527],[121.9918251503259,24.800134496080535],[121.97079663164914,24.800134496080535]]]
-#     extended_event_polygon = [[[121.53817199170591,23.22459912782818],[121.53817199170591,25.341862614792756],[122.88342453539373,25.341862614792756],[122.88342453539373,23.22459912782818],[121.53817199170591,23.22459912782818]]]
+#     polygon = [[[-117.5038333,35.72329970990673],[-117.4962643901115,35.72221596590278],[-117.48960895945737,35.71909553174351],[-117.48467004734442,35.71431498626769],[-117.48204325618994,35.70845117072158],[-117.48204496162863,35.7022115022954],[-117.48467436566698,35.69634857692398],[-117.48961387007292,35.69156939527501],[-117.49626759528836,35.68845016044506],[-117.5038333,35.687366890093266],[-117.51139900471165,35.68845016044506],[-117.51805272992709,35.69156939527501],[-117.52299223433303,35.69634857692398],[-117.52562163837138,35.7022115022954],[-117.52562334381005,35.70845117072158],[-117.52299655265558,35.71431498626769],[-117.51805764054264,35.71909553174351],[-117.5114022098885,35.72221596590278],[-117.5038333,35.72329970990673]]]
+#     extended_event_polygon = [[[-117.503833,36.64857],[-117.102053,36.591021],[-116.75033,36.425554],[-116.491903,36.172726],[-116.4345125703697,36.04067562430324],[-116.3603356270024,35.67265830876247],[-116.362294,35.536149],[-116.503804,35.229571],[-116.763866,34.980501],[-117.110889,34.81834],[-117.503833,34.762097],[-117.896777,34.81834],[-118.243801,34.980501],[-118.503863,35.229571],[-118.645372,35.536149],[-118.650072,35.863695],[-118.515764,36.172726],[-118.257337,36.425554],[-117.905614,36.591021],[-117.503833,36.64857]]]
 #     track_data = main(polygon, extended_event_polygon)
-    #print(track_data)
+#     print(track_data)
