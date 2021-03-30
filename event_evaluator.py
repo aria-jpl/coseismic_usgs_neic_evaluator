@@ -36,7 +36,8 @@ def main(event_path, depth_filter=None, mag_filter=None, alertlevel_filter=None,
     # calculate relevant event information such as mag, extent, etc
     event_info = calculate_event_info(event)
     # determine if the event passes the requisite filters
-    if not pass_filters(event_info, depth_filter, mag_filter, alertlevel_filter, polygon_filter, water_filter, dynamic_threshold, distance_from_land):
+    #if not pass_filters(event_info, depth_filter, mag_filter, alertlevel_filter, polygon_filter, water_filter, dynamic_threshold, distance_from_land):
+    if not pass_filters(event_info, depth_filter, mag_filter, alertlevel_filter, polygon_filter, water_filter, dynamic_threshold):
         print("Event failed to pass filters....not generating AOI.")
         return
 
