@@ -76,10 +76,10 @@ def pass_filters(event_info, depth_filter, mag_filter, alertlevel_filter, polygo
             print("Event failed polygon filter.")
             return False
     # run distance filter
-    if distance_from_land:
-        if not run_distance_filter(event_info, distance_from_land):
-            print("Event failed distance filter.")
-            return False
+    # if distance_from_land:
+    #     if not run_distance_filter(event_info, distance_from_land):
+    #         print("Event failed distance filter.")
+    #         return False
     # run depth filter
     if depth_filter:
         if not run_depth_filter(event_info, float(depth_filter)):
