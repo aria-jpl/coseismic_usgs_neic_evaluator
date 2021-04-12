@@ -65,7 +65,8 @@ def main(event_path, depth_filter=None, mag_filter=None, alertlevel_filter=None,
     # mlucas    run_slack_notification(event, slack_notification)
 
 
-def pass_filters(event_info, depth_filter, mag_filter, alertlevel_filter, polygon_filter, water_filter, dynamic_threshold, distance_from_land):
+#def pass_filters(event_info, depth_filter, mag_filter, alertlevel_filter, polygon_filter, water_filter, dynamic_threshold, distance_from_land):
+def pass_filters(event_info, depth_filter, mag_filter, alertlevel_filter, polygon_filter, water_filter, dynamic_threshold):
     '''runs all requisite filters, returning true if it needs to process, false if not'''
     # if it's a test, just pass it
     if event_info['id'] == 'USGS_NEIC_us1000test':
