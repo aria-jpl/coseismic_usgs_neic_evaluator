@@ -71,10 +71,13 @@ def main(event_polygon, extended_event_polygon):
 
         # AOITRACK land area (km2)
         tracks[track]['land_area_km2'] = lightweight_water_mask.get_land_area(track_json)
-        print("Track land area: " + tracks[track]['land_area_km2'])
+        #print("Track land area: " + tracks[track]['land_area_km2'])
 
         track_poly_land = lightweight_water_mask.get_land_polygons(track_json)
         print("Track land polygon: " + track_poly_land)
+        track_poly_land_json = json.dumps(track_poly_land)
+        print("Track intersection json: ")
+        print(track_poly_land)
 
         # AOI bbox -- starts out with the complete displacement estimator and is carved down
         # to a smaller piece track-by-track
@@ -83,7 +86,7 @@ def main(event_polygon, extended_event_polygon):
         # Save track data for create-aoi-track job submission
         tmp.append(track)
         #tmp.append(track_json)
-        tmp.append(track_poly_land)
+        tmp.append(track_poly_land_json)
         tmp.append(tracks[track]['orbit_direction'])
         track_data.append(tmp)
     print("This is what is sent out")
