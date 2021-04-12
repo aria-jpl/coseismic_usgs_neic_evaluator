@@ -57,12 +57,13 @@ def main(event_polygon, extended_event_polygon):
             print("Failed to parse acquisition metadata for: {}".format(product))
             pass
 
-    tmp_intersect = convertToPolygon(extended_event_polygon)
+    #tmp_intersect = convertToPolygon(extended_event_polygon)
 
     # Build the track datasets by finding the union of all acquisitions over the same track.
     # Build the AOI dataset by finding the intersection of the displacement estimator polygon and the generated tracks
     for track in tracks.copy():
         tmp = []
+        tmp_intersect = convertToPolygon(extended_event_polygon)
 
         # AOITRACK bbox
         boundary = cascaded_union(tracks[track]['polygons'])
@@ -74,23 +75,26 @@ def main(event_polygon, extended_event_polygon):
         #print("Track land area: " + tracks[track]['land_area_km2'])
 
         track_poly_land = lightweight_water_mask.get_land_polygons(track_json)
-        print("Track land polygon: " + track_poly_land)
+        #print("Track land polygon: " + track_poly_land)
         track_poly_land_json = json.dumps(track_poly_land)
         print("Track intersection json: ")
         print(track_poly_land)
 
         # AOI bbox -- starts out with the complete displacement estimator and is carved down
         # to a smaller piece track-by-track
-        tmp_intersect = tmp_intersect.intersection(boundary)
+        aoi_track = tmp_intersect.intersection(boundary)
+        aoi_track_shape = shapely.geometry.mapping(aoi_track)
+        aoi_track_json = json.dumps(aoi_track_shape)
+        print("AOI TRACK JSON: ")
+        print(json.dumps(aoi_track_json, indent=2))
 
         # Save track data for create-aoi-track job submission
         tmp.append(track)
-        #tmp.append(track_json)
-        tmp.append(track_poly_land_json)
+        tmp.append(aoi_track_json)
         tmp.append(tracks[track]['orbit_direction'])
         track_data.append(tmp)
-    print("This is what is sent out")
-    tmp_intersect_json = shapely.geometry.mapping(tmp_intersect)
+    #print("This is what is sent out")
+    #tmp_intersect_json = shapely.geometry.mapping(tmp_intersect)
     aoi = json.dumps(tmp_intersect_json)
     print(aoi)
     print(track_data)
