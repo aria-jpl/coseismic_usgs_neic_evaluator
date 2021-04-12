@@ -57,32 +57,27 @@ def main(event_polygon, extended_event_polygon):
             print("Failed to parse acquisition metadata for: {}".format(product))
             pass
 
-    #tmp_intersect = convertToPolygon(extended_event_polygon)
+    extended_polygon = convertToPolygon(extended_event_polygon)
 
     # Build the track datasets by finding the union of all acquisitions over the same track.
     # Build the AOI dataset by finding the intersection of the displacement estimator polygon and the generated tracks
     for track in tracks.copy():
         tmp = []
-        tmp_intersect = convertToPolygon(extended_event_polygon)
 
         # AOITRACK bbox
         boundary = cascaded_union(tracks[track]['polygons'])
         geojson = shapely.geometry.mapping(boundary)
         track_json = json.dumps(geojson)
 
-        # AOITRACK land area (km2)
-        tracks[track]['land_area_km2'] = lightweight_water_mask.get_land_area(track_json)
-        #print("Track land area: " + tracks[track]['land_area_km2'])
-
         track_poly_land = lightweight_water_mask.get_land_polygons(track_json)
         #print("Track land polygon: " + track_poly_land)
         track_poly_land_json = json.dumps(track_poly_land)
-        print("Track intersection json: ")
+        print("Track land polygon json: ")
         print(track_poly_land)
 
         # AOI bbox -- starts out with the complete displacement estimator and is carved down
         # to a smaller piece track-by-track
-        aoi_track = tmp_intersect.intersection(boundary)
+        aoi_track = extended_polygon.intersection(track_poly_land)
         aoi_track_shape = shapely.geometry.mapping(aoi_track)
         aoi_track_json = json.dumps(aoi_track_shape)
         print("AOI TRACK JSON: ")
@@ -95,7 +90,7 @@ def main(event_polygon, extended_event_polygon):
         track_data.append(tmp)
     #print("This is what is sent out")
     #tmp_intersect_json = shapely.geometry.mapping(tmp_intersect)
-    aoi = json.dumps(tmp_intersect_json)
+    aoi = null
     print(aoi)
     print(track_data)
     print("All the tracks")
