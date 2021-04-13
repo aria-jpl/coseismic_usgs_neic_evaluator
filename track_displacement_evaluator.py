@@ -48,7 +48,7 @@ def main(event_polygon, extended_event_polygon):
                 tracks[track_number]["polygons"].append(polygon)
                 tracks[track_number]["acq_id"].append(acq_id)
             else: # If this is a new track
-                tracks[track_number] = {"polygons": [],"orbit_direction": "", "acq_id": [], "land_area_km2": None}
+                tracks[track_number] = {"polygons": [],"orbit_direction": "", "acq_id": []}
                 tracks[track_number]["polygons"].append(polygon)
                 tracks[track_number]["orbit_direction"] = orbit_direction
                 tracks[track_number]["acq_id"].append(acq_id)
@@ -70,32 +70,22 @@ def main(event_polygon, extended_event_polygon):
         track_json = json.dumps(geojson)
 
         track_poly_land = lightweight_water_mask.get_land_polygons(track_json)
-        #print("Track land polygon: " + track_poly_land)
-        track_poly_land_json = json.dumps(track_poly_land)
-        print("Track land polygon json: ")
-        print(track_poly_land)
 
         # AOI bbox -- starts out with the complete displacement estimator and is carved down
         # to a smaller piece track-by-track
-        aoi_track = extended_polygon.intersection(track_poly_land)
+        track_poly_land_shape = convertToPolygon(track_poly_land)
+        aoi_track = extended_polygon.intersection(track_poly_land_shape)
         aoi_track_shape = shapely.geometry.mapping(aoi_track)
         aoi_track_json = json.dumps(aoi_track_shape)
-        print("AOI TRACK JSON: ")
-        print(json.dumps(aoi_track_json, indent=2))
 
         # Save track data for create-aoi-track job submission
         tmp.append(track)
         tmp.append(aoi_track_json)
         tmp.append(tracks[track]['orbit_direction'])
         track_data.append(tmp)
-    #print("This is what is sent out")
-    #tmp_intersect_json = shapely.geometry.mapping(tmp_intersect)
-    aoi = null
-    print(aoi)
-    print(track_data)
-    print("All the tracks")
+    print("Tracks that were processed:")
     print(tracks.keys())
-    return track_data, aoi
+    return track_data
 
 # Converts geojson to a shapely polygon
 def convertToPolygon(event_polygon):
