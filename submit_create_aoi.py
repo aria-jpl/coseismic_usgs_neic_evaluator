@@ -28,7 +28,7 @@ def main(job_params, version, queue, priority, tags):
         'enable_dedup': False
     }
     print('submitting jobs with params: %s' %  json.dumps(params))
-    r = requests.post(job_submit_url, params=params, verify=False)
+    r = requests.post(job_submit_url, data=params, verify=False)
     if r.status_code != 200:
         print('submission job failed')
         r.raise_for_status()
