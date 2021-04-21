@@ -71,7 +71,7 @@ def main(event_polygon, extended_event_polygon):
 
         track_poly_land = lightweight_water_mask.get_land_polygons(track_json)
         water_masked_polygon = json.dumps(track_poly_land)
-        
+
         # AOI bbox -- starts out with the complete displacement estimator and is carved down
         # to a smaller piece track-by-track
         #track_poly_land_shape = convertToPolygon(track_poly_land)
@@ -79,11 +79,30 @@ def main(event_polygon, extended_event_polygon):
         #aoi_track_shape = shapely.geometry.mapping(aoi_track)
         #aoi_track_json = json.dumps(aoi_track_shape)
 
+        # Find intersection of track poly land and extended polygon
+        s = json.dumps(track_poly_land)
+        poly = shape(json.loads(s))
+        polygon = wkt.loads(str(poly))
+        intersectionShape = extended_polygon.intersection(polygon)
+        print("Intersection extended event and track")
+        print(intersectionShape)
+
+        geo = shapely.geometry.mapping(intersectionShape)
+        watermaskjson = json.dumps(geo)
+
+
+        print("Water masked intersection")
+        print(watermaskjson)
+
+        print("Original water masked poly")
+        print(water_masked_polygon)
+        print("Extended Polygon")
+        print(json.dumps(extended_event_polygon))
         # Save track data for create-aoi-track job submission
         tmp.append(track)
         tmp.append(track_json)
         tmp.append(tracks[track]['orbit_direction'])
-        tmp.append(water_masked_polygon)
+        tmp.append(watermaskjson)
         track_data.append(tmp)
     print("Tracks that were processed:")
     print(tracks.keys())
