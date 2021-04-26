@@ -1,7 +1,7 @@
 # coseismic_usgs_neic_evaluator
 USGS NEIC evaluator
 
-This repository contains code that will create a Program Executable (PGE) that generates HySDS datasets from USGS earthquake events. The PGE queries for acquisitions that overlap with the PDL event polygon then finds the union of the returned acquisitions for each track. The resulting polygon is published as an AOITRACK HySDS dataset. The overlap between these AOITRACKS and the extended PDL event polygon is published as an event AOI.
+This repository contains code that will create a Program Executable (PGE) that generates HySDS datasets from USGS earthquake events. The PGE queries for acquisitions that overlap with the PDL extended event polygon then finds the union of the returned acquisitions for each track. The track polygons are then intersected and water-masked with the extended event polygon to generate the AOITRACK HySDS datasets. The AOITRACKs are displayed in Tosca as single polygons and the `water_masked_geojson_polygon` field within the AOITRACK's metadata contains the water-masked, intersected polygon.
 
 <img width="670" alt="Screen Shot 2021-04-26 at 10 51 45 AM" src="https://user-images.githubusercontent.com/47004511/116128092-6fb22200-a67d-11eb-84c0-160ccf08bf9f.png">
 
