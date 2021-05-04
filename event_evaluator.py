@@ -374,9 +374,9 @@ def build_params(event, event_info, days_pre_event, days_post_event, event_track
     if isTrack:
         params['name'] = aoi_name + "_" + str(event_track[0])
         params['geojson_polygon'] = json.loads(event_track[1])
-        params['track_number'] = event_track[0]
-        params['orbit_direction'] = event_track[2]
-        params['water_masked_geojson_polygon'] = event_track[3]
+        params['additional_metadata']['event_metadata']['track_number'] = event_track[0]
+        params['additional_metadata']['event_metadata']['orbit_direction'] = event_track[2]
+        #params['water_masked_geojson_polygon'] = event_track[3]
         params['additional_metadata']['event_metadata']['water_masked_geojson_polygon'] = json.loads(event_track[3])
     else:
         params['name'] = aoi_name
